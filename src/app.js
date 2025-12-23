@@ -1,9 +1,13 @@
 import express from "express";
 import configRoutes from "./routes/index.js";
 import handlebars from "express-handlebars";
-
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // middlewares
 app.use("/public", express.static("public"));
@@ -31,6 +35,7 @@ app.engine(
     })
 );
 app.set("view engine", "handlebars");
+app.set("views", path.join(__dirname, "views"));
 
 configRoutes(app);
 
