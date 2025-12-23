@@ -1,13 +1,15 @@
 import usersRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
 
-import { static as staticDir } from "express";
+import {
+    ensureAuth,
+    redirectIfAuthenticated,
+    noCacheAuth,
+} from "../middlewares/auth.js";
 
 const constructorMethod = (app) => {
     app.use("/users", usersRoutes);
-    app.use("/auth", authRoutes)
-
-    app.use("/public", staticDir("public"));
+    app.use("/auth", redirectIfAuthenticated, noCacheAuth, authRoutes)
 
     // Home page
     app.get("/", (req, res) => {

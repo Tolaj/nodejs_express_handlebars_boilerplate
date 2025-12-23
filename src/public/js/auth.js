@@ -27,7 +27,7 @@ const handleSignIn = (event) => {
             showToast("Login successful! Redirecting...", "success");
 
             setTimeout(() => {
-                window.location.href = "/main/dashboard";
+                window.location.href = "/";
             }, 1200);
         })
         .catch((err) => {
@@ -44,6 +44,7 @@ const handleSignUp = (event) => {
     event.preventDefault();
 
     const form = event.target;
+    const name = form.name.value.trim();
     const email = form.email.value.trim();
     const password = form.password.value.trim();
     const confirmPassword = form.confirmPassword.value.trim();
@@ -63,40 +64,37 @@ const handleSignUp = (event) => {
     button.disabled = true;
     button.innerText = "Signing up...";
 
-    fetch("/users/sign-up", {
+    fetch("/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
     })
         .then(async (res) => {
             const body = await res.json();
             return { status: res.status, body };
         })
         .then(({ status, body }) => {
-            if (status !== 200) {
-                showToast(
-                    body.message && body.message !== "user not found"
-                        ? body.message
-                        : "User not found, if you are a student kindly request a professor to add you in a course",
-                    "error"
-                );
+            if (status !== 200 && status !== 201) {
+
+                const message =
+                    body?.message === "user not found"
+                        ? "User not found"
+                        : body?.message || body?.errorResponse?.errmsg;
+
+                showToast(message, "error");
                 button.disabled = false;
                 button.innerText = "Sign Up";
                 return;
             }
 
-            if (body.email && body.status === "inactive") {
-                showToast("Account created! Please verify your email.", "info");
-                localStorage.setItem("otpEmail", body.email);
-                setTimeout(() => {
-                    window.location.href = "/auth/verify-otp";
-                }, 800);
-                return;
-            }
 
             showToast("Signup successful!", "success");
             button.disabled = false;
             button.innerText = "Sign Up";
+
+            setTimeout(() => {
+                window.location.href = "/auth/sign-in";
+            }, 800);
         })
         .catch((err) => {
             console.error("handleSignUp error:", err);
