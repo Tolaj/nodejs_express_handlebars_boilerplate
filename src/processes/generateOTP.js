@@ -1,7 +1,5 @@
 import * as validator from "../utils/validator.js";
 import sendEmail from "./sendEmail.js";
-// TODO: Create one for the students also!!!!!!
-
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import path from "path";
@@ -33,8 +31,8 @@ export const sendOTPEmail = async (email) => {
     html = renderTemplateLiteral(html, { otp, name: temp_name });
     await sendEmail(
         email,
-        "SlackOverflow OTP confirmation",
-        `Good day ${temp_name}! \nPlease use the below OTP to authenticate yourself to the website.`,
+        "OTP Confirmation",
+        `Hello ${temp_name}, please use the OTP below to verify your account.`,
         html
     );
     return otp;

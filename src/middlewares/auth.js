@@ -1,3 +1,5 @@
+import { APP_CONFIG } from "../config/settings.js";
+
 const ensureAuth = (req, res, next) => {
     if (!req.session.user) {
         return res.redirect("/auth/sign-in");
@@ -5,27 +7,27 @@ const ensureAuth = (req, res, next) => {
     next();
 };
 
+const ensureRole = (...roles) => (req, res, next) => {
+    if (!req.session.user || !roles.includes(req.session.user.role)) {
+        return res.status(403).render("error", {
+            title: "Forbidden",
+            message: "You do not have permission to access this page.",
+        });
+    }
+    next();
+};
+
 const redirectIfAuthenticated = (req, res, next) => {
-    if (req.session.user && req.originalUrl !== "/auth/sign-out") {
-        return res.redirect("/main/dashboard");
+    if (req.session.user) {
+        return res.redirect(APP_CONFIG.afterLoginRedirect);
     }
     next();
 };
 
 const noCacheAuth = (req, res, next) => {
-    res.set(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private, max-age=0"
-    );
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private, max-age=0");
     res.set("Pragma", "no-cache");
     res.set("Expires", "-1");
-    next();
-};
-
-const ensureProfessor = (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== "professor") {
-        return res.status(403).send("Access denied");
-    }
     next();
 };
 
@@ -34,10 +36,4 @@ const setSessionLocals = (req, res, next) => {
     next();
 };
 
-export {
-    ensureAuth,
-    ensureProfessor,
-    setSessionLocals,
-    redirectIfAuthenticated,
-    noCacheAuth,
-};
+export { ensureAuth, ensureRole, redirectIfAuthenticated, noCacheAuth, setSessionLocals };

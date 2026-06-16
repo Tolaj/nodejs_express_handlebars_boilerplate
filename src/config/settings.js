@@ -1,21 +1,20 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+const DB_NAME = process.env.DB_NAME || "testDB";
 
 export const mongoConfig = {
     serverUrl: process.env.MONGO_URI || "mongodb://localhost:27017/",
+    database: DB_NAME,
     config: {
-        // for mongodb atlas
-
-        // useNewUrlParser: true,
-        // useUnifiedTopology: true,
-        // minPoolSize: 1,
-        // maxPoolSize: 1,
-
-        // for localhost mongodb server
-        dbName: "testDB",
+        dbName: DB_NAME,
     },
-    // database: "testDB",
+};
+
+export const APP_CONFIG = {
+    sessionName: process.env.SESSION_NAME || "AppSession",
+    sessionSecret: process.env.SESSION_SECRET || "change-me-in-production",
+    afterLoginRedirect: process.env.AFTER_LOGIN_REDIRECT || "/",
 };
 
 
